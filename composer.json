@@ -1,0 +1,22 @@
+{
+    "name": "dodysat/feederdikti",
+    "description": "Feeder Dikti Library for php",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Dody Satria",
+            "email": "dody.satria13@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "Dodysat\\Feederdikti\\": "src/"
+        }
+    },
+    "require": {
+        "php": "^7.3|^8.0",
+        "guzzlehttp/guzzle": "^7.0"
+    }
+}
