@@ -7,15 +7,14 @@ use Illuminate\Support\Facades\Cache;
 
 class Feederdikti
 {
-    private $token_expiretion = 1200; //Seconds
 
-    public function action($account, $data)
+    public static function action($account, $data)
     {
-        $token = $this->getCachedToken($account);
+        $token = self::getCachedToken($account);
 
         $withtoken = array_merge(['token' => $token], $data);
         $client = new Client();
-        $r = $client->request('POST', $account['feeder_ws_url'], [
+        $r = $client->request('POST', $account['ws_url'], [
             'json' => $withtoken
         ]);
         $contents = $r->getBody()->getContents();
@@ -23,34 +22,45 @@ class Feederdikti
         return json_decode($contents, true);
     }
 
-    private function getToken($account)
+    private static function getToken($account)
     {
-        $feeder_ws_url = $account['feeder_ws_url'];
-        $feeder_username = $account['feeder_username'];
-        $feeder_password = $account['feeder_password'];
+        $ws_url = $account['ws_url'];
+        $username = $account['username'];
+        $password = $account['password'];
 
         $client = new Client();
-        $r = $client->request('POST', $feeder_ws_url, [
-            'json' => ['act' => 'GetToken', 'username' => $feeder_username, 'password' => $feeder_password]
+        $r = $client->request('POST', $ws_url, [
+            'json' => ['act' => 'GetToken', 'username' => $username, 'password' => $password]
         ]);
         $data = json_decode($r->getBody()->getContents());
         if ($data->error_code == 0) {
-            Cache::put('feederdiktiToken', $data->data->token, $this->token_expiretion);
+            $token_expiration = 1200;
+            if ($account['token_expiration']) {
+                $token_expiration = $account['token_expiration'];
+            }
+            Cache::put('feederdiktiToken', $data->data->token, $token_expiration);
             return $data->data->token;
         } else {
             return false;
         }
     }
 
-    private function getCachedToken($account)
+    private static function getCachedToken($account)
     {
+        if ($account['new_token']) {
+            Cache::pull('feederdiktiToken');
+        }
         if (Cache::has('feederdiktiToken')) {
-            $value = Cache::remember('feederdiktiToken', $this->token_expiretion, function () {
+            $token_expiration = 1200;
+            if ($account['token_expiration']) {
+                $token_expiration = $account['token_expiration'];
+            }
+            $value = Cache::remember('feederdiktiToken', $token_expiration, function () {
                 return Cache::get('feederdiktiToken');
             });
             return $value;
         } else {
-            $this->getToken($account);
+            self::getToken($account);
             return Cache::get('feederdiktiToken');
         }
     }
