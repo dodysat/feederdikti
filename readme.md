@@ -87,7 +87,7 @@ return in boolean
 
 true = connected
 
-false = connected
+false = disconnected
 
 ### 2. Action
 
