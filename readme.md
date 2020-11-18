@@ -65,6 +65,50 @@ class YourControllerName extends Controller
 }
 ```
 
+## Available Methodes
+
+### 1. Check Connection to Feeder
+
+```
+$account = [
+    'ws_url' => "http://your-feeder-address/ws/live2.php",
+    'username' => "kode PT",
+    'password' => "Password Feeder",
+    'new_token' => false, // optional
+    'token_expiration' => 1200, // optional
+];
+
+$result = Feederdikti::checkConnection($account);
+print_r($result);
+
+```
+
+return in boolean
+
+true = connected
+
+false = disconnected
+
+### 2. Action
+
+```
+$account = [
+    'ws_url' => "http://your-feeder-address/ws/live2.php",
+    'username' => "kode PT",
+    'password' => "Password Feeder",
+    'new_token' => false, // optional
+    'token_expiration' => 1200, // optional
+];
+
+$data = [
+    'act' => 'GetProfilPT',
+];
+
+$result = Feederdikti::action($account, $data);
+print_r($result);
+
+```
+
 ## Note
 
 This library uses the cache feature of laravel to store the token feeder so it doesn't request a new token every time the library makes a request
