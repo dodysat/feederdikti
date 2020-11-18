@@ -22,6 +22,16 @@ class Feederdikti
         return json_decode($contents, true);
     }
 
+    public static function checkConnection($account)
+    {
+        $get_token = self::getToken($account);
+        if (!$get_token) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     private static function getToken($account)
     {
         $ws_url = $account['ws_url'];
